@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mindora — La tua memoria personale</title>
+
+<style>
+:root {
+  --bg: #080B18;
+  --panel: #10162B;
+  --panel-2: #171E38;
+  --text: #F5F7FF;
+  --muted: #A3AEC9;
+  --accent: #9B6DFF;
+  --accent-2: #36E0D0;
+  --border: rgba(157, 126, 255, 0.22);
+  --glow: rgba(155, 109, 255, 0.25);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font: 16px/1.6 "Segoe UI", sans-serif;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(122,77,255,.24), transparent 38%),
+    radial-gradient(ellipse at 92% 28%, rgba(25,211,219,.13), transparent 34%),
+    radial-gradient(ellipse at 50% 100%, rgba(76,57,147,.13), transparent 42%),
+    var(--bg);
+}
+
+header, main {
+  width: min(100% - 36px, 900px);
+  margin: auto;
+}
+
+header { padding: 38px 0 24px; }
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+background: linear-gradient(90deg, #A78BFA, #36E0D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo span {
+  color: var(--cyan);
+  text-shadow: 0 0 20px rgba(103,240,237,.65);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: .3px;
+}
+
+h1 {
+  font-size: clamp(32px, 6vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -1.7px;
+  margin: 38px 0 12px;
+  background: linear-gradient(100deg, #fff 10%, #c6b4ff 58%, #7be9e8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+p { color: var(--muted); }
+
+.panel {
+  background: linear-gradient(145deg, rgba(26,33,63,.88), rgba(13,18,38,.88));
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0 18px 55px rgba(0,0,0,.20), 0 0 35px var(--glow);
+  backdrop-filter: blur(18px);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-title h2 {
+  font-size: 21px;
+  letter-spacing: -.4px;
+}
+
+#count {
+  color: var(--cyan);
+  font-size: 13px;
+}
+
+.search { display: flex; gap: 10px; }
+
+input, textarea, select {
+  width: 100%;
+  min-width: 0;
+  background: rgba(5,9,25,.72);
+  color: var(--text);
+  border: 1px solid rgba(183,173,255,.20);
+  border-radius: 14px;
+  padding: 14px;
+  font: inherit;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(167,139,250,.12);
+}
+
+input::placeholder, textarea::placeholder {
+  color: #7883a8;
+}
+
+button {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 13px 18px;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(110deg, #8b5cf6, #657bfa 65%, #318caa);
+  box-shadow: 0 5px 20px rgba(125,92,246,.18);
+  transition: transform .18s, filter .18s;
+}
+
+button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+button.secondary {
+  color: #d9d5ff;
+  background: rgba(255,255,255,.055);
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+button.delete {
+  background: rgba(135,43,74,.30);
+  border-color: rgba(255,120,160,.18);
+  box-shadow: none;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.field { margin-bottom: 13px; }
+.full { grid-column: 1 / -1; }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.filters button {
+  padding: 8px 13px;
+  background: rgba(255,255,255,.045);
+  border-color: var(--line);
+  color: #c4cce5;
+  box-shadow: none;
+  font-size: 13px;
+}
+
+.filters button.active {
+  background: linear-gradient(110deg, rgba(139,92,246,.42), rgba(49,140,170,.32));
+  border-color: rgba(167,139,250,.45);
+  color: #fff;
+}
+
+.memory {
+  border: 1px solid rgba(255,255,255,.09);
+  background: linear-gradient(125deg, rgba(35,43,78,.72), rgba(17,24,47,.78));
+  border-radius: 19px;
+  padding: 19px;
+  margin-top: 13px;
+  transition: border-color .2s, transform .2s;
+}
+
+.memory:hover {
+  border-color: rgba(103,240,237,.28);
+  transform: translateY(-2px);
+}
+
+.memory h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  letter-spacing: -.3px;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--cyan);
+  margin-bottom: 8px;
+}
+
+.memory p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 8px 0 15px;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.actions button {
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.empty {
+  text-align: center;
+  padding: 34px 12px;
+  color: var(--muted);
+}
+
+.hidden { display: none; }
+
+footer {
+  text-align: center;
+  color: #7f89a9;
+  font-size: 12px;
+  padding: 24px 0 32px;
+}
+
+@media (max-width: 560px) {
+  header { padding-top: 25px; }
+  h1 { margin-top: 30px; }
+  .panel { padding: 17px; border-radius: 20px; }
+  .fields { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .search { flex-direction: column; }
+  .section-title { align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="infinity">∞</span>Mindora</div>
+  <div class="tagline">Una memoria intelligente per la vita quotidiana</div>
+  <h1>I tuoi ricordi,<br>tutti in un posto speciale.</h1>
+  <p>Momenti, persone, luoghi e idee da ritrovare quando vuoi.</p>
+</header>
+<main>
+  <section class="panel">
+    <div class="section-title">
+      <h2>La tua memoria</h2>
+      <span id="count">0 ricordi</span>
+    </div>
+    <div class="search">
+      <input id="search" placeholder="Cerca un ricordo, un luogo, una persona…">
+      <button id="newBtn">＋ Aggiungi</button>
+    </div>
+    <div class="filters" id="filters">
+      <button class="active" data-cat="Tutti">Tutti</button>
+      <button data-cat="Momenti">Momenti</button>
+      <button data-cat="Foto">Foto</button>
+      <button data-cat="Luoghi">Luoghi</button>
+      <button data-cat="Persone">Persone</button>
+      <button data-cat="Idee">Idee</button>
+    </div>
+    <div id="memories"></div>
+  </section>
+
+  <section class="panel hidden" id="editor">
+    <h2 id="formTitle">Aggiungi un ricordo</h2>
+    <form id="memoryForm">
+      <input id="editId" type="hidden">
+      <div class="fields">
+        <div class="field full">
+          <label for="title">Titolo *</label>
+          <input id="title" required maxlength="120" placeholder="Es. Una giornata speciale">
+        </div>
+        <div class="field">
+          <label for="date">Data</label>
+          <input id="date" type="date">
+        </div>
+        <div class="field">
+          <label for="category">Categoria</label>
+          <select id="category">
+            <option>Momenti</option><option>Foto</option><option>Luoghi</option>
+            <option>Persone</option><option>Idee</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="place">Luogo</label>
+          <input id="place" placeholder="Dove è successo?">
+        </div>
+        <div class="field full">
+          <label for="people">Persone</label>
+          <input id="people" placeholder="Chi vuoi ricordare?">
+        </div>
+        <div class="field full">
+          <label for="description">Descrizione</label>
+          <textarea id="description" placeholder="Racconta ciò che vuoi conservare…"></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit">Salva ricordo</button>
+        <button class="secondary" type="button" id="cancelBtn">Annulla</button>
+      </div>
+    </form>
+  </section>
+  <footer>
+    Prima versione di Mindora · I dati restano in questo browser.
+    Evita di cancellare i dati del sito se vuoi conservare i ricordi.
+  </footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "Mindora-memories-v1";
+let memories = [];
+let activeCategory = "Tutti";
+try { memories = JSON.parse(localStorage.getItem(KEY) || "[]"); }
+catch { memories = []; }
+
+function persist() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(memories));
+    return true;
+  } catch {
+    alert("Non riesco a salvare i dati in questo browser.");
+    return false;
+  }
+}
+function escapeHTML(value="") {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function render() {
+  const query = $("search").value.trim().toLowerCase();
+  const filtered = memories.filter(m => {
+    const text = [m.title,m.description,m.date,m.place,m.people,m.category].join(" ").toLowerCase();
+    return (activeCategory === "Tutti" || m.category === activeCategory) && text.includes(query);
+  });
+  $("count").textContent = memories.length + (memories.length === 1 ? " ricordo" : " ricordi");
+  $("memories").innerHTML = filtered.length ? filtered.map(m => `
+    <article class="memory">
+      <div class="meta">${escapeHTML(m.category)}${m.date ? " · "+escapeHTML(m.date) : ""}${m.place ? " · "+escapeHTML(m.place) : ""}</div>
+      <h3>${escapeHTML(m.title)}</h3>
+      ${m.people ? `<div class="meta">Con ${escapeHTML(m.people)}</div>` : ""}
+      ${m.description ? `<p>${escapeHTML(m.description)}</p>` : ""}
+      <div class="actions">
+        <button class="secondary" data-edit="${escapeHTML(m.id)}">Modifica</button>
+        <button class="delete" data-delete="${escapeHTML(m.id)}">Elimina</button>
+      </div>
+    </article>`).join("") : `<div class="empty">${query || activeCategory !== "Tutti" ? "Nessun ricordo trovato. Prova a cambiare ricerca o categoria." : "La tua memoria inizia qui. Aggiungi il primo ricordo ✨"}</div>`;
+}
+function closeEditor() { $("editor").classList.add("hidden"); }
+function openEditor(m=null) {
+  $("memoryForm").reset();
+  $("editId").value = m ? m.id : "";
+  $("formTitle").textContent = m ? "Modifica il ricordo" : "Aggiungi un ricordo";
+  $("title").value = m ? m.title : "";
+  $("date").value = m ? m.date : new Date().toISOString().slice(0,10);
+  $("category").value = m ? m.category : "Momenti";
+  $("place").value = m ? m.place : "";
+  $("people").value = m ? m.people : "";
+  $("description").value = m ? m.description : "";
+  $("editor").classList.remove("hidden");
+  $("editor").scrollIntoView({behavior:"smooth",block:"start"});
+  $("title").focus();
+}
+$("newBtn").addEventListener("click", () => openEditor());
+$("cancelBtn").addEventListener("click", closeEditor);
+$("search").addEventListener("input", render);
+$("filters").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-cat]");
+  if (!btn) return;
+  activeCategory = btn.dataset.cat;
+  $("filters").querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+  render();
+});
+$("memoryForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const id = $("editId").value;
+  const record = {
+    id: id || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    title: $("title").value.trim(),
+    date: $("date").value,
+    category: $("category").value,
+    place: $("place").value.trim(),
+    people: $("people").value.trim(),
+    description: $("description").value.trim()
+  };
+  if (!record.title) return;
+  const previous = memories;
+  memories = id ? memories.map(m => m.id === id ? record : m) : [record, ...memories];
+  if (!persist()) { memories = previous; return; }
+  closeEditor();
+  render();
+});
+$("memories").addEventListener("click", e => {
+  const edit = e.target.closest("[data-edit]");
+  const del = e.target.closest("[data-delete]");
+  if (edit) {
+    const m = memories.find(item => item.id === edit.dataset.edit);
+    if (m) openEditor(m);
+  }
+  if (del) {
+    const m = memories.find(item => item.id === del.dataset.delete);
+    if (m && confirm(`Vuoi eliminare "${m.title}"?`)) {
+      const previous = memories;
+      memories = memories.filter(item => item.id !== m.id);
+      if (!persist()) memories = previous;
+      render();
+    }
+  }
+});
+render();
+</script>
+</body>
+</html>
